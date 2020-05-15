@@ -8,6 +8,7 @@ from comunication_ltd.database.models import User
 
 def create_user(user):
     user.salt, user.password = hash_password(user)
+    # TODO: Verify Password
     db.session.add(user)
     db.session.commit()
     return user
@@ -28,8 +29,9 @@ def hash_password(user):
 
 
 def change_password(user_id, data):
+    # TODO: verify current password
     db_user = get_user_by_id(user_id)
-    # TODO: add check for 3 passwords in the past, return True if success  else False
+    # TODO: add check for 3 passwords in the past, and General rules of password, return True if success  else False
     db_user.password = hashlib.pbkdf2_hmac('sha256', data.get("new_password"), db_user.salt, 100000)
     db.session.commit()
     return True
