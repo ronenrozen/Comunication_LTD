@@ -7,13 +7,9 @@ from comunication_ltd.logic.customer_bounary import parse_customer, CustomerPayl
 import comunication_ltd.logic.customer_logic as cl
 
 
-@app.route('/user/adduser', methods=['POST'])
+@app.route('/user/register', methods=['POST'])
 def add_user():
-    user = ul.create_user(parse_user(request))
-    if user:
-        return jsonify(UserPayload(id=user.id, username=user.username).serialize())
-    else:
-        return Response(status=409, response="User already exist")
+    return ul.create_user(parse_user(request))
 
 
 @app.route('/user/getall', methods=['GET'])
@@ -43,8 +39,7 @@ def update_user_by_id(user_id):
 def login():
     is_auth, user = ul.login(request.get_json())
     if is_auth:
-        user_payload = jsonify(
-            UserPayload(id=user.id, mail=user.mail, username=user.username).serialize())
+        user_payload = jsonify(UserPayload(id=user.id, email=user.mail).serialize())
         # user_payload["access_token"] = create_access_token(identity=user.username)
         # user_payload["refresh_token"] = create_refresh_token(identity=user.username)
         return user_payload
@@ -64,6 +59,11 @@ def add_customer():
 @app.route('/user/forgot_password', methods=['POST'])
 def forgot_password():
     return ul.forgot_password(request.get_json())
+
+
+@app.route('/user/forgot_change_password', methods=['POST'])
+def forgot_change_password():
+    return ul.forgot_change_password(request.get_json())
 
 
 @app.route('/customer/getall', methods=['GET'])

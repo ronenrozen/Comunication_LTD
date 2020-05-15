@@ -1,7 +1,6 @@
 import configparser
 from pathlib import Path
 import secrets
-from waf import log
 
 FILE_PATH = (Path(__file__).parent / 'config.ini').resolve()
 CONFIG_PARSER = configparser.ConfigParser()
@@ -30,19 +29,17 @@ class Config:
             CONFIG_PARSER.write(configfile)
 
     @staticmethod
-    def get_value(section, key, default):
+    def get_value(key, default):
         try:
-            return CONFIG_PARSER.get(section, key)
+            return CONFIG_PARSER.get('GENERAL', key)
         except (configparser.NoOptionError, KeyError):
-            log.exception(f"Key - '{key}' dont exist in the config file, using default value - {default}.")
             return default
 
     @staticmethod
-    def set_value(section, key, value):
+    def set_value(key, value):
         try:
-            CONFIG_PARSER.set(section, key, value)
+            CONFIG_PARSER.set('GENERAL', key, value)
             with open(str(FILE_PATH), 'w') as configfile:
                 CONFIG_PARSER.write(configfile)
         except (configparser.NoSectionError, TypeError):
-            log.exception(f"Key - '{key}' dont exist in the config file, using default value - {default}.")
             return None

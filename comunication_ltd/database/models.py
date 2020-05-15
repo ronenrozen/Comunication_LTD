@@ -6,18 +6,17 @@ from datetime import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
     password = db.Column(db.String(120), nullable=False)
     old_password_1 = db.Column(db.String(120), nullable=True)
     old_password_2 = db.Column(db.String(120), nullable=True)
-    mail = db.Column(db.String(120), nullable=False)
     salt = db.Column(db.LargeBinary, nullable=False)
     forgot_password = db.Column(db.String(120), nullable=True)
     date_created = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self):
         return f"User(User ID:{self.id}'," \
-               f"Username - {self.username}'," \
+               f"Email - {self.email}'," \
                f"Password - '{self.password}'," \
                f"salt - {self.salt}'," \
                f"Created : - {self.date_created})"
