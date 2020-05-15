@@ -2,6 +2,6 @@ from comunication_ltd import ma
 from comunication_ltd.database.models import User
 
 
-class UserSchema(ma.ModelSchema):
+class CustomerSchema(ma.Schema):
     class Meta:
-        model = User
+        fields = ("id", "customer_name", "email", "sector", "package")

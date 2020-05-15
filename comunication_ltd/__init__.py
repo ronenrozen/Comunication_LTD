@@ -1,6 +1,7 @@
 ##################################################
 from pathlib import Path
 from flask import Flask
+from flask_mail import Mail
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -17,6 +18,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = config.get_value('APP', 'SQLALCHEMY_DATA
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 CORS(app)
+mail = Mail(app)
+
 from comunication_ltd.layout import control
 
 base_path = Path(__file__).parent

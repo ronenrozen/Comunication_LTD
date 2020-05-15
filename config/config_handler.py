@@ -17,13 +17,15 @@ class Config:
 
     @staticmethod
     def create_config():
-        CONFIG_PARSER['APP'] = {
+        CONFIG_PARSER['GENERAL'] = {
             'SECRET_KEY': secrets.token_hex(16),
-            'SQLALCHEMY_DATABASE_URI': 'sqlite:///database/server.db'}
-        CONFIG_PARSER['PASSWORD'] = {
-            'password_length': 10,
-            'server_url': ''
-        }
+            'SQLALCHEMY_DATABASE_URI': 'sqlite:///database/server.db',
+            'PASSWORD_LENGTH': 10,
+            'IS_BIG_LETTERS': True,
+            'IS_SMALL_LETTERS': True,
+            'IS_NUMBERS': True,
+            'SPECIAL_CHAR': True}
+
         with open(str(FILE_PATH), 'w') as configfile:
             CONFIG_PARSER.write(configfile)
 
@@ -44,4 +46,3 @@ class Config:
         except (configparser.NoSectionError, TypeError):
             log.exception(f"Key - '{key}' dont exist in the config file, using default value - {default}.")
             return None
-
