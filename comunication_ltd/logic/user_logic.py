@@ -69,16 +69,25 @@ def forgot_password(payload):
     return response_server_error()
 
 
+def verify_password():
+    # return false if password not valid
+    return True
+
+
 def forgot_change_password(payload):
     db_user = get_user_by_mail(payload.get("email"))
     key = db_user.forgot_password
-    is_verify = key == str(payload.get('key'))
-    if is_verify:
+    is_correct_key = key == str(payload.get('key'))
+    if is_correct_key:
         # TODO: verify new password and move old passwords
+        if not verify_password():
+            return response_forbidden()
         db_user.password = hashlib.pbkdf2_hmac('sha256', payload.get("password"), db_user.salt, 100000)
+        db_user.forgot_password = ""
         db.session.commit()
+
         return response_ok()
-    return response_server_error() # response 400 wrong key
+    return response_server_error()  # response 400 wrong key
 
 
 def response_mail_already_exist():
@@ -91,3 +100,7 @@ def response_server_error():
 
 def response_ok():
     return Response(status=200)
+
+
+def response_forbidden():
+    return Response(status=403)

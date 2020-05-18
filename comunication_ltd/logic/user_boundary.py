@@ -13,5 +13,5 @@ class UserPayload:
 
 
 def parse_user(payload):
-    username, password, mail, salt = payload.get_json().values()
-    return User(username=username, password=password, mail=mail, salt=salt)
+    email,password = payload.get_json().values()
+    return User(email=email, password=password)
