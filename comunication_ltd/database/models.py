@@ -16,10 +16,13 @@ class User(db.Model):
 
     def __repr__(self):
         return f"User(User ID:{self.id}'," \
-               f"Email - {self.email}'," \
-               f"Password - '{self.password}'," \
-               f"salt - {self.salt}'," \
-               f"Created : - {self.date_created})"
+                f"Email - {self.email}'," \
+                f"Password - '{self.password}'," \
+                f"Old_password_1 - '{self.old_password_1}'," \
+                f"Old_password_2 - '{self.old_password_2}'," \
+                f"salt - {self.salt}'," \
+                f"Forgot_password - {self.forgot_password}'," \
+                f"Created : - {self.date_created})"
 
 
 class Customer(db.Model):
