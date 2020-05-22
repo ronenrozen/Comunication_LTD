@@ -1,3 +1,5 @@
+from flask_jwt_extended import create_access_token
+
 from comunication_ltd.database.models import User
 
 
@@ -9,9 +11,10 @@ class UserPayload:
 
     def serialize(self):
         return {"id": self.id,
-                "email": self.email}
+                "email": self.email,
+                "access_token": create_access_token(identity=self.email)}
 
 
 def parse_user(payload):
-    email,password = payload.get_json().values()
+    email, password = payload.get_json().values()
     return User(email=email, password=password)

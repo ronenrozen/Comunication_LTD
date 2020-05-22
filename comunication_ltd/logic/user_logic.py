@@ -22,6 +22,14 @@ def create_user(user):
     return response_mail_already_exist()
 
 
+def create_admin_user(user):
+    user_db = get_user_by_mail(user.email)
+    if not user_db:
+        user.salt, user.password = hash_password(user)
+        db.session.add(user)
+        db.session.commit()
+
+
 def get_user_by_id(user_id):
     return User.query.filter_by(id=user_id).first()
 
@@ -136,4 +144,3 @@ def response_forbidden():
 
 def response_invalid_password():
     return Response(status=404)  # TODO: change status
-
