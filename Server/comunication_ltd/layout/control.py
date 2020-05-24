@@ -16,7 +16,12 @@ import comunication_ltd.logic.pacakge_logic as pl
 
 @app.route('/user/register', methods=['POST'])
 def add_user():
-    return ul.create_user(parse_user(request))
+    response = ul.create_user(parse_user(request))
+    if type(response) == Response:
+        response.headers['Access-Control-Allow-Origin'] = '*'
+    else:
+        response = jsonify(response)
+    return response
 
 
 @app.route('/user/getall', methods=['GET'])
@@ -24,13 +29,13 @@ def get_all_users():
     return jsonify(ul.get_all())
 
 
-@app.route('/user/change_password/<user_id>')
+@app.route('/user/change_password/<user_id>', methods=['PUT'])
+@jwt_required
 def change_password(user_id):
-    is_changed = ul.change_password(user_id, request.get_json())
-    if is_changed:
-        return Response(status=200)
-    else:
-        return Response(status=500)
+    response = ul.change_password(user_id, request.get_json())
+    if type(response) == Response:
+        response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 
 @app.route('/user/login', methods=['POST'])
@@ -52,7 +57,10 @@ def forgot_password():
 
 @app.route('/user/forgot_change_password', methods=['POST'])
 def forgot_change_password():
-    return ul.forgot_change_password(request.get_json())
+    response = ul.forgot_change_password(request.get_json())
+    if type(response) == Response:
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
 
 
 #####################################################
@@ -60,6 +68,7 @@ def forgot_change_password():
 #####################################################
 
 @app.route('/customer/addcustomer', methods=['POST'])
+@jwt_required
 def add_customer():
     customer = cl.create_customer(parse_customer(request))
     if customer:

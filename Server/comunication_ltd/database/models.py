@@ -27,7 +27,7 @@ class User(db.Model):
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    company_name = db.Column(db.String(120), nullable=False)
+    customer_name = db.Column(db.String(120), nullable=False)
     sector = db.Column(db.String(120), nullable=True)
     email = db.Column(db.String(120), nullable=False)
     package_id = db.Column(db.Integer, db.ForeignKey('package.package_id'))
@@ -35,7 +35,7 @@ class Customer(db.Model):
 
     def __repr__(self):
         return f"Customer(Customer ID:{self.id}'," \
-               f"Company Name - {self.company_name}'," \
+               f"Customer Name - {self.customer_name}'," \
                f"email - '{self.email}'," \
                f"Created : - {self.date_created})"
 

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from flask import Response, jsonify
 from flask_mail import Message
 from comunication_ltd import config
@@ -12,10 +14,9 @@ import re
 def create_user(user):
     user_db = get_user_by_mail(user.email)
     if not user_db:
-        user.salt, user.password = hash_password(user)
-        # TODO: Verify Password , invalid password use this func - response_invalid_password()
         if not verify_password(user.password):
-            response_invalid_password()
+            return response_invalid_password()
+        user.salt, user.password = hash_password(user)
         db.session.add(user)
         db.session.commit()
         return UserPayload(id=user.id, email=user.email).serialize()
@@ -45,21 +46,21 @@ def hash_password(user):
 
 
 def change_password(user_id, data):
-    # TODO: verify current password
     db_user = get_user_by_id(user_id)
-    if db_user.password != data.get("old_password"):
-        return False
+    hashed_new_password = hashlib.pbkdf2_hmac('sha256', data.get("new_password").encode("utf8"), db_user.salt, 100000)
+    hashed_old_password = hashlib.pbkdf2_hmac('sha256', data.get("old_password").encode("utf8"), db_user.salt, 100000)
+    if db_user.password != hashed_old_password:
+        return Response(status=400)
     if not verify_password(data.get("new_password")):
-        return False
-    if db_user.old_password_1 == data.get("new_password") or db_user.old_password_2 == data.get("new_password") or \
-            db_user.password == data.get("new_password"):
-        return False
+        return Response(status=401)
+    if db_user.old_password_1 == hashed_new_password or db_user.old_password_2 == hashed_new_password or \
+            db_user.password == hashed_new_password:
+        return Response(status=403)
     db_user.old_password_2 = db_user.old_password_1
     db_user.old_password_1 = db_user.password
-    # TODO: add check for 3 passwords in the past, and General rules of password, return True if success  else False
-    db_user.password = hashlib.pbkdf2_hmac('sha256', data.get("new_password"), db_user.salt, 100000)
+    db_user.password = hashed_new_password
     db.session.commit()
-    return True
+    return Response(status=200)
 
 
 def login(user):
@@ -81,7 +82,8 @@ def forgot_password(payload):
         msg = Message("Forgot Password",
                       sender="comunication_LTD@protonmail.com",
                       recipients=[payload.get('email')])
-        msg.body = f"Key for changing password-\n'{key}'"
+        msg.body = f"Go to our site http://localhost:3000/forgetchangepassword and use below" \
+                   f" Key for changing password-\n{key}"
         mail.send(msg)
         db_user.forgot_password = str(key)
         db.session.commit()
@@ -91,34 +93,53 @@ def forgot_password(payload):
 
 def verify_password(password):
     # return false if password not valid
-    if len(password) != config.get_value("PASSWORD_LENGTH", 10):
+    if len(password) < int(config.get_value("PASSWORD_LENGTH", 10)):
         return False
-    if not any(x.islower() for x in password) and config.get_value("IS_BIG_LETTERS", False):  # capital letter
+    if not any(x.islower() for x in password) and config.get_value("IS_SMALL_LETTERS", True):  # small letter
         return False
-    if not any(x.isupper() for x in password) and config.get_value("IS_SMALL_LETTER", False):  # small letter
+    if not any(x.isupper() for x in password) and config.get_value("IS_BIG_LETTERS", True):  # capital letter
         return False
-    if not any(x.digit() for x in password) and config.get_value("IS_NUMBERS", False):  # number
+    digit_check = re.compile('[1-9]')
+    if digit_check.search(password) is None and config.get_value("IS_NUMBERS", True):
         return False
+    # if not any(x.isdigit() for x in password) and config.get_value("IS_NUMBERS", True):  # number
+    #     return False
     string_check = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-    if string_check.search(password) is None and config.get_value("SPECIAL_CHAR", False):  # special character
+    if string_check.search(password) is None and config.get_value("SPECIAL_CHAR", True):  # special character
+        return False
+    if password_dict_check(password):
         return False
     return True
 
 
+def password_dict_check(password):
+    base_path = Path(__file__).parent
+    file_path = (base_path / "./realhuman_phill.txt").resolve()
+
+    with open(file_path, 'r') as f:
+        for line in f.readline().strip():
+            if line == password:
+                return True
+    return False
+
+
 def forgot_change_password(payload):
     db_user = get_user_by_mail(payload.get("email"))
+    if not db_user:
+        return response_mail_already_exist()
     key = db_user.forgot_password
     is_correct_key = key == str(payload.get('key'))
     if is_correct_key:
         # TODO: verify new password and move old passwords
         if not verify_password(payload.get('password')):
             return response_forbidden()
-        if db_user.old_password_1 == payload.get("password") or db_user.old_password_2 == payload.get("password") or \
-                db_user.password == payload.get("password"):
-            return False
+        hashed_password = hashlib.pbkdf2_hmac('sha256', payload.get("password").encode('utf-8'), db_user.salt, 100000)
+        if db_user.old_password_1 == hashed_password or db_user.old_password_2 == hashed_password or \
+                db_user.password == hashed_password:
+            return Response(status=401)
         db_user.old_password_2 = db_user.old_password_1
         db_user.old_password_1 = db_user.password
-        db_user.password = hashlib.pbkdf2_hmac('sha256', payload.get("password"), db_user.salt, 100000)
+        db_user.password = hashed_password
         db_user.forgot_password = ""
         db.session.commit()
 
@@ -143,4 +164,4 @@ def response_forbidden():
 
 
 def response_invalid_password():
-    return Response(status=404)  # TODO: change status
+    return Response(status=400)  # TODO: change status

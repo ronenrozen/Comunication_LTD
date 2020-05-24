@@ -14,9 +14,9 @@ def get_all():
     customers = Customer.query.join(
         Package, Customer.package_id == Package.package_id
     ).order_by(
-        Customer.company_name.desc()
+        Customer.id.asc()
     ).with_entities(
-        Customer.id, Customer.company_name, Customer.email, Customer.sector, Package.package_id, Package.package_price,
+        Customer.id, Customer.customer_name, Customer.email, Customer.sector, Package.package_id, Package.package_price,
         Package.package_size
     ).all()
     return customer_schema.dump(obj=customers)
@@ -44,8 +44,8 @@ def update_customer_by_id(customer_id, new_customer):
 
 
 def update_customer(customer, new_customer):
-    if customer.company_name != new_customer.get("companyName"):
-        customer.company_name = new_customer.get("companyName")
+    if customer.customer_name != new_customer.get("companyName"):
+        customer.customer_name = new_customer.get("companyName")
     if customer.sector != new_customer.get("sector"):
         customer.sector = new_customer.get("sector")
     if customer.email != new_customer.get("email"):

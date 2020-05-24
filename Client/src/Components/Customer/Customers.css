@@ -1,0 +1,11 @@
+table{
+    width:70% !important;
+
+}
+form{
+    width: auto !important;
+}
+
+label {
+    margin: 0 1em;
+}

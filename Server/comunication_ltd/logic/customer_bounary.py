@@ -20,4 +20,4 @@ class CustomerPayload:
 
 def parse_customer(payload):
     customer_name, email, sector, package = payload.get_json().values()
-    return Customer(customer_name=customer_name, email=email, sector=sector, package=package)
+    return Customer(customer_name=customer_name, email=email, sector=sector, package_id=package)

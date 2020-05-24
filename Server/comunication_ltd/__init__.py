@@ -42,8 +42,6 @@ mail = Mail(app)
 
 from comunication_ltd.layout import control
 
-base_path = Path(__file__).parent
-file_path = (base_path / "./database/server.db").resolve()
 
 
 def create_initial_db():
@@ -55,10 +53,13 @@ def create_initial_db():
     pacakge_logic.create_package(Package(package_name="40G, 130$", package_size=40, package_price=130))
     pacakge_logic.create_package(Package(package_name="50G, 140$", package_size=50, package_price=140))
     customer_logic.create_customer(
-        Customer(company_name="Tzuf_LTD", sector="Public Transport", email="tzufltd@gmail.com", package_id=1))
+        Customer(customer_name="Tzuf_LTD", sector="Public Transport", email="tzufltd@gmail.com", package_id=1))
     customer_logic.create_customer(
-        Customer(company_name="Sports Eron", sector="Sport", email="brutality@gmail.com", package_id=3))
+        Customer(customer_name="Sports Eron", sector="Sport", email="brutality@gmail.com", package_id=3))
 
+
+base_path = Path(__file__).parent
+file_path = (base_path / "./database/server.db").resolve()
 
 if not file_path.is_file():
     db.drop_all()
