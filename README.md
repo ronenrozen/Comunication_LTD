@@ -1,5 +1,4 @@
-Prerequisets:
-Install
+# Prerequisets:
 	*Node.Js
 	*openssl
 	*python 3.7
@@ -9,7 +8,7 @@ Preparing server (do this commands in server folder) -
 	1.create env, run this command in cli - python -m venv my_venv
 	2.install requierments , pip install -r requierments.txt
 	3.generate Openssl certificate with this command- 
-		openssl req -nodes -x509 -newkey rsa:2048 -keyout ca.key -out ca.crt -subj "/C=IL/L=Israel/OU=root/CN=`localhost -f`/emailAddress=comunication.LTD@gmail.com"
+	openssl req -nodes -x509 -newkey rsa:2048 -keyout ca.key -out ca.crt -subj "/C=IL/L=Israel/OU=root/CN=`localhost -		f`/emailAddress=comunication.LTD@gmail.com"
 	3. in cli - python run.py
 
 Preparing client (do this commands in client folder)
@@ -25,5 +24,6 @@ admin user
 	
 # Docker
 	Just use docker-compose up --build
-	client - http://localhost:3000
-	server - https://localhost:5000
+	
+client - http://localhost:3000
+server - https://localhost:5000
