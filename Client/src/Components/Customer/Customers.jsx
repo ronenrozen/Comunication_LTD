@@ -8,6 +8,11 @@ import {Redirect} from "react-router-dom";
 import axios from "axios";
 import './Customers.css';
 import packageAxios from "../Axios/packageAxios";
+import https from 'https';
+
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
 
 class Customers extends Component {
 
@@ -19,7 +24,7 @@ class Customers extends Component {
             show: false,
             currentCustomer: {},
             lastAddedCustomer: {},
-            packageIntId:1
+            packageIntId: 1
         };
     }
 
@@ -32,14 +37,16 @@ class Customers extends Component {
                 cancelToken: this.source.token,
                 headers: {
                     'Authorization': `Bearer ${JSON.parse(sessionStorage.getItem('user'))['access_token']}`,
-                }
+                },
+                httpsAgent: agent
             });
-            this.setState({customersList: data},()=>console.log(this.state));
+            this.setState({customersList: data}, () => console.log(this.state));
             const response = await packageAxios.get(`/getall`, {
                 cancelToken: this.source.token,
                 headers: {
                     'Authorization': `Bearer ${JSON.parse(sessionStorage.getItem('user'))['access_token']}`,
-                }
+                },
+                httpsAgent: agent
             });
             this.setState({packageList: response.data})
         } catch (error) {
@@ -86,7 +93,8 @@ class Customers extends Component {
             const {data} = await customerAxios.get(`/getall`, {
                 headers: {
                     'Authorization': `Bearer ${JSON.parse(sessionStorage.getItem('user'))['access_token']}`,
-                }
+                },
+                httpsAgent: agent
             });
             this.setState({customersList: data})
         } catch (error) {
@@ -99,7 +107,8 @@ class Customers extends Component {
             const {status} = await customerAxios.delete(`/delete/${this.state.currentCustomer.id}`, {
                 headers: {
                     'Authorization': `Bearer ${JSON.parse(sessionStorage.getItem('user'))['access_token']}`,
-                }
+                },
+                httpsAgent: agent
             });
             if (status) {
                 this.hideModal()
@@ -118,7 +127,7 @@ class Customers extends Component {
                 [e.target.name]: e.target.value
             }
         }, () => console.log(this.state.currentCustomer));
-        if (e.target.name ==="packageId") {
+        if (e.target.name === "packageId") {
             this.changeToPackageId(e.target.value)
         }
     };
@@ -126,6 +135,7 @@ class Customers extends Component {
     changeToPackageId = (targetValue) => {
         let packId;
         for (let [key, value] of this.state.packageList.entries()) {
+            console.log(key);
             if (value["package_name"] === targetValue)
                 packId = value["package_id"];
         }
@@ -142,7 +152,8 @@ class Customers extends Component {
                 cancelToken: this.source.token,
                 headers: {
                     'Authorization': `Bearer ${JSON.parse(sessionStorage.getItem('user'))['access_token']}`,
-                }
+                },
+                httpsAgent: agent
             });
             if (status) {
                 this.hideModal()
@@ -156,9 +167,9 @@ class Customers extends Component {
 
 
     render() {
-        // if (!sessionStorage.getItem('user')) {
-        //     return <Redirect to={'./'}/>
-        // }
+        if (!sessionStorage.getItem('user')) {
+            return <Redirect to={'./'}/>
+        }
         return (
             <div>
                 <AddCustomer handleAdd={this.handleAdd} packages={this.state.packageList}/>

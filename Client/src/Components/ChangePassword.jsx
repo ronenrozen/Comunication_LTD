@@ -3,7 +3,10 @@ import './ChangePassword.css'
 import Modal from "./Modal/Modal";
 import PasswordModal from "./Modal/PasswordModal";
 import userAxios from "./Axios/userAxios";
-
+import https from 'https';
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
 class ChangePassword extends Component {
     constructor(props) {
         super(props);
@@ -46,14 +49,14 @@ class ChangePassword extends Component {
             old_password: this.state.oldPassword,
             new_password: this.state.newPassword,
         };
-        console.log("data", data);
         try {
             await userAxios.put(`/change_password/${JSON.parse(sessionStorage.getItem('user'))['id']}`, data,
                 {
                     headers: {
                         'Authorization': `Bearer ${JSON.parse(sessionStorage.getItem('user'))['access_token']}`,
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    httpsAgent: agent
                 });
             this.setState({successfulUpdate: true})
         } catch (error) {

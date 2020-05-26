@@ -164,4 +164,4 @@ def response_forbidden():
 
 
 def response_invalid_password():
-    return Response(status=400)  # TODO: change status
+    return Response(status=400)

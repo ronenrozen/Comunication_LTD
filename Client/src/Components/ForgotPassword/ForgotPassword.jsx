@@ -2,6 +2,11 @@ import React, {Component} from 'react';
 import userAxios from "../Axios/userAxios";
 import {Redirect} from "react-router-dom";
 import '../Login/login.css'
+import https from 'https';
+
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
 
 class ForgotPassword extends Component {
     constructor(props) {
@@ -26,7 +31,7 @@ class ForgotPassword extends Component {
             email: this.state.email
         };
         try {
-            await userAxios.post('forgot_password', userInfo);
+            await userAxios.post('forgot_password', userInfo,{ httpsAgent: agent });
             this.setState({redirect: true});
         } catch (error) {
             this.setState({invalidEmail: true});

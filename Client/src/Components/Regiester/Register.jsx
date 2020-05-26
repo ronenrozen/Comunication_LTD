@@ -3,7 +3,10 @@ import userAxios from "../Axios/userAxios";
 import {Link, Redirect} from "react-router-dom"
 import Modal from "../Modal/Modal";
 import PasswordModal from "../Modal/PasswordModal";
-
+import https from 'https';
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
 
 class Register extends Component {
     constructor(props) {
@@ -40,7 +43,7 @@ class Register extends Component {
             password: this.state.password
         };
         try {
-            await userAxios.post('register', userInfo);
+            await userAxios.post('register', userInfo, { httpsAgent: agent });
             this.setState({redirect: true});
         } catch (error) {
             console.log("error.response.code",error.response);

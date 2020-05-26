@@ -4,7 +4,11 @@ import {Link, Redirect} from "react-router-dom";
 import '../Login/login.css'
 import Modal from '../Modal/Modal'
 import PasswordModal from "../Modal/PasswordModal";
+import https from 'https';
 
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
 class ForgotChangePassword extends Component {
     constructor(props) {
         super(props);
@@ -43,7 +47,7 @@ class ForgotChangePassword extends Component {
             password: this.state.password
         };
         try {
-            await userAxios.post('forgot_change_password', userInfo);
+            await userAxios.post('forgot_change_password', userInfo,{httpsAgent: agent});
             this.setState({redirect: true});
         } catch (error) {
             console.log(error.response)

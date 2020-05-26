@@ -2,7 +2,11 @@ import React, {Component} from 'react'
 import userAxios from './customerAxios'
 import Input from '../Utils/Input'
 import Button from "../Utils/Button";
+import https from 'https';
 
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
 
 export default class AddCustomer extends Component {
     constructor(props) {
@@ -12,7 +16,7 @@ export default class AddCustomer extends Component {
             email: "",
             sector: "",
             packageStr: "",
-            packageIdInt:1
+            packageIdInt: 1
         }
     }
 
@@ -20,7 +24,7 @@ export default class AddCustomer extends Component {
         this.setState({
             [e.target.name]: e.target.value
         });
-        if (e.target.name ==="packageStr") {
+        if (e.target.name === "packageStr") {
             this.changeToPackageId(e.target.value)
         }
     };
@@ -28,11 +32,12 @@ export default class AddCustomer extends Component {
     changeToPackageId = (targetValue) => {
         let packId;
         for (let [key, value] of this.props.packages.entries()) {
+            console.log(key);
             if (value["package_name"] === targetValue)
                 packId = value["package_id"];
         }
 
-        this.setState({packageIdInt: packId}, () => console.log("statepackage",this.state))
+        this.setState({packageIdInt: packId}, () => console.log("statepackage", this.state))
     };
 
     handleAdd = async () => {
@@ -49,7 +54,8 @@ export default class AddCustomer extends Component {
                     headers: {
                         'Authorization': `Bearer ${JSON.parse(sessionStorage.getItem('user'))['access_token']}`,
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    httpsAgent: agent
                 });
             this.props.handleAdd(data);
         } catch (error) {
