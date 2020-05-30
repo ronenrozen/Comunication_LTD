@@ -1,6 +1,6 @@
 from sqlalchemy import ForeignKey
 
-from comunication_ltd import db
+from Server.comunication_ltd import db
 from datetime import datetime
 
 

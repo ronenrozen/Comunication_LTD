@@ -1,13 +1,13 @@
 from flask_jwt_extended import jwt_required, create_access_token
 
-from comunication_ltd import app
+from Server.comunication_ltd import app
 import requests
 from flask import request, jsonify, Response
-from comunication_ltd.logic.user_boundary import parse_user, UserPayload
-import comunication_ltd.logic.user_logic as ul
-from comunication_ltd.logic.customer_bounary import parse_customer, CustomerPayload
-import comunication_ltd.logic.customer_logic as cl
-import comunication_ltd.logic.pacakge_logic as pl
+from Server.comunication_ltd.logic.user_boundary import parse_user, UserPayload
+import Server.comunication_ltd.logic.user_logic as ul
+from Server.comunication_ltd.logic.customer_bounary import parse_customer, CustomerPayload
+import Server.comunication_ltd.logic.customer_logic as cl
+import Server.comunication_ltd.logic.pacakge_logic as pl
 
 
 #####################################################
@@ -74,7 +74,7 @@ def add_customer():
     if customer:
         return jsonify(CustomerPayload(id=customer.id, customer_name=customer.customer_name).serialize())
     else:
-        return Response(status=409, response="User already exist")
+        return Response(status=409, response="Customer already exist")
 
 
 @app.route('/customer/getall', methods=['GET'])

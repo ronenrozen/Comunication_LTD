@@ -1,6 +1,6 @@
-from comunication_ltd import db
-from comunication_ltd.database.models import Package
-from comunication_ltd.database.schemas import PackageSchema
+from Server.comunication_ltd import db
+from Server.comunication_ltd.database.models import Package
+from Server.comunication_ltd.database.schemas import PackageSchema
 
 
 def create_package(package):

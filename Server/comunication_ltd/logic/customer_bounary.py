@@ -1,4 +1,4 @@
-from comunication_ltd.database.models import Customer
+from Server.comunication_ltd.database.models import Customer
 
 
 class CustomerPayload:

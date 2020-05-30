@@ -2,12 +2,12 @@ from pathlib import Path
 
 from flask import Response, jsonify
 from flask_mail import Message
-from comunication_ltd import config
-from comunication_ltd import db, mail
+from Server.comunication_ltd import config
+from Server.comunication_ltd import db, mail
 import os
 import hashlib
-from comunication_ltd.database.models import User
-from comunication_ltd.logic.user_boundary import UserPayload
+from Server.comunication_ltd.database.models import User
+from Server.comunication_ltd.logic.user_boundary import UserPayload
 import re
 
 
@@ -16,6 +16,8 @@ def create_user(user):
     if not user_db:
         if not verify_password(user.password):
             return response_invalid_password()
+        if not check_sqli(user.email) or not check_sqli(user.id) or not check_sqli(user.salt):
+            return response_server_error()  # might be sql injection
         user.salt, user.password = hash_password(user)
         db.session.add(user)
         db.session.commit()
@@ -104,10 +106,17 @@ def verify_password(password):
         return False
     # if not any(x.isdigit() for x in password) and config.get_value("IS_NUMBERS", True):  # number
     #     return False
-    string_check = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+    string_check = re.compile('[@_!#$%^&*()?/\|}{~:]')
     if string_check.search(password) is None and config.get_value("SPECIAL_CHAR", True):  # special character
         return False
     if password_dict_check(password):
+        return False
+    return check_sqli(password)  # returns true if ' " < > = not exist else false
+
+
+def check_sqli(data):
+    string_check = re.compile('''[><'"=]''')
+    if string_check.search(data) is not None or not data:  # for sqli
         return False
     return True
 

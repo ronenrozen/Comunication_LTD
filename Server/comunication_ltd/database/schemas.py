@@ -1,4 +1,4 @@
-from comunication_ltd import ma
+from Server.comunication_ltd import ma
 
 
 class CustomerSchema(ma.Schema):
