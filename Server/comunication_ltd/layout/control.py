@@ -1,13 +1,13 @@
 from flask_jwt_extended import jwt_required, create_access_token
 
-from Server.comunication_ltd import app
+from comunication_ltd import app
 import requests
 from flask import request, jsonify, Response
-from Server.comunication_ltd.logic.user_boundary import parse_user, UserPayload
-import Server.comunication_ltd.logic.user_logic as ul
-from Server.comunication_ltd.logic.customer_bounary import parse_customer, CustomerPayload
-import Server.comunication_ltd.logic.customer_logic as cl
-import Server.comunication_ltd.logic.pacakge_logic as pl
+from comunication_ltd.logic.user_boundary import parse_user, UserPayload
+import comunication_ltd.logic.user_logic as ul
+from comunication_ltd.logic.customer_bounary import parse_customer, CustomerPayload
+import comunication_ltd.logic.customer_logic as cl
+import comunication_ltd.logic.pacakge_logic as pl
 
 
 #####################################################
@@ -40,14 +40,11 @@ def change_password(user_id):
 
 @app.route('/user/login', methods=['POST'])
 def login():
-    is_auth, user = ul.login(request.get_json())
-    if is_auth:
-        user_payload = jsonify(UserPayload(id=user.id, email=user.email).serialize())
-        # user_payload["access_token"] = create_access_token(identity=user.email)
-        # user_payload["refresh_token"] = create_refresh_token(identity=user.username)
-        return user_payload
+    response = ul.login(request.get_json())
+    if type(response) == Response:
+        return response
     else:
-        return Response(status=500)
+        return jsonify(UserPayload(id=response.id, email=response.email).serialize())
 
 
 @app.route('/user/forgot_password', methods=['POST'])

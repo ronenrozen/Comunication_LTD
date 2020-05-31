@@ -2,12 +2,12 @@ from pathlib import Path
 
 from flask import Response, jsonify
 from flask_mail import Message
-from Server.comunication_ltd import config
-from Server.comunication_ltd import db, mail
+from comunication_ltd import config
+from comunication_ltd import db, mail
 import os
 import hashlib
-from Server.comunication_ltd.database.models import User
-from Server.comunication_ltd.logic.user_boundary import UserPayload
+from comunication_ltd.database.models import User
+from comunication_ltd.logic.user_boundary import UserPayload
 import re
 
 
@@ -68,13 +68,32 @@ def change_password(user_id, data):
 def login(user):
     db_user = get_user_by_mail(user.get("email"))
     if db_user:
+        if db_user.blocked:
+            return Response(status=400)
         key = hashlib.pbkdf2_hmac('sha256', user.get("password").encode('utf-8'), db_user.salt, 100000)
         is_same_key = key == db_user.password
         if is_same_key:
-            return True, db_user
+            db_user.password_attempts = 0
+            db.session.commit()
+            return db_user
         else:
-            return False
-    return
+            response = password_attempt_logic(db_user)
+            return Response(status=401) if response else Response(status=404)
+    return Response(status=403)
+
+
+def password_attempt_logic(user):
+    flag = False
+    number_of_attempts = int(config.get_value('PASSWORD_ATTEMPTS', 3)) - 1
+    password_attempt = user.password_attempts
+    if password_attempt < number_of_attempts:
+        user.password_attempts = password_attempt + 1
+    elif password_attempt == number_of_attempts:
+        user.password_attempts = number_of_attempts + 1
+        user.blocked = True
+        flag = True
+    db.session.commit()
+    return flag
 
 
 def forgot_password(payload):
@@ -116,7 +135,7 @@ def verify_password(password):
 
 def check_sqli(data):
     string_check = re.compile('''[><'"=]''')
-    if string_check.search(data) is not None or not data:  # for sqli
+    if string_check.search(str(data)) is not None or not data:  # for sqli
         return False
     return True
 
@@ -139,7 +158,6 @@ def forgot_change_password(payload):
     key = db_user.forgot_password
     is_correct_key = key == str(payload.get('key'))
     if is_correct_key:
-        # TODO: verify new password and move old passwords
         if not verify_password(payload.get('password')):
             return response_forbidden()
         hashed_password = hashlib.pbkdf2_hmac('sha256', payload.get("password").encode('utf-8'), db_user.salt, 100000)

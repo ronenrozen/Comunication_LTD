@@ -23,7 +23,8 @@ class Config:
             'IS_BIG_LETTERS': True,
             'IS_SMALL_LETTERS': True,
             'IS_NUMBERS': True,
-            'SPECIAL_CHAR': True}
+            'SPECIAL_CHAR': True,
+            'PASSWORD_ATTEMPTS': 3}
 
         with open(str(FILE_PATH), 'w') as configfile:
             CONFIG_PARSER.write(configfile)

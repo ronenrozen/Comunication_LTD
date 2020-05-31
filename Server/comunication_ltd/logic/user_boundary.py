@@ -1,6 +1,6 @@
 from flask_jwt_extended import create_access_token
 
-from Server.comunication_ltd.database.models import User
+from comunication_ltd.database.models import User
 
 
 class UserPayload:

@@ -1,7 +1,7 @@
-from Server.comunication_ltd import db
-from Server.comunication_ltd.database.models import Customer, Package
-from Server.comunication_ltd.database.schemas import CustomerSchema
-from Server.comunication_ltd.logic.user_logic import response_mail_already_exist, check_sqli, response_server_error
+from comunication_ltd import db
+from comunication_ltd.database.models import Customer, Package
+from comunication_ltd.database.schemas import CustomerSchema
+from comunication_ltd.logic.user_logic import response_mail_already_exist, check_sqli, response_server_error
 
 
 def create_customer(customer):

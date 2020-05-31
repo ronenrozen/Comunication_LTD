@@ -1,6 +1,4 @@
-from sqlalchemy import ForeignKey
-
-from Server.comunication_ltd import db
+from comunication_ltd import db
 from datetime import datetime
 
 
@@ -12,6 +10,8 @@ class User(db.Model):
     old_password_2 = db.Column(db.String(120), nullable=True)
     salt = db.Column(db.LargeBinary, nullable=False)
     forgot_password = db.Column(db.String(120), nullable=True)
+    password_attempts = db.Column(db.Integer, nullable=False, default=0)
+    blocked = db.Column(db.Boolean, nullable=False, default=False)
     date_created = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self):
@@ -22,6 +22,8 @@ class User(db.Model):
                f"Old_password_2 - '{self.old_password_2}'," \
                f"salt - {self.salt}'," \
                f"Forgot_password - {self.forgot_password}'," \
+               f"password_attempt - {self.password_attempt}'," \
+               f"blocked - {self.blocked}'," \
                f"Created : - {self.date_created})"
 
 
