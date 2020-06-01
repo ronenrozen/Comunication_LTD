@@ -123,8 +123,6 @@ def verify_password(password):
     digit_check = re.compile('[1-9]')
     if digit_check.search(password) is None and config.get_value("IS_NUMBERS", True):
         return False
-    # if not any(x.isdigit() for x in password) and config.get_value("IS_NUMBERS", True):  # number
-    #     return False
     string_check = re.compile('[@_!#$%^&*()?/\|}{~:]')
     if string_check.search(password) is None and config.get_value("SPECIAL_CHAR", True):  # special character
         return False
@@ -171,6 +169,8 @@ def forgot_change_password(payload):
         db.session.commit()
 
         return response_ok()
+    db_user.forgot_password = ""
+    db.session.commit()
     return response_server_error()  # response 400 wrong key
 
 

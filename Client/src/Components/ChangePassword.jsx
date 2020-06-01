@@ -99,7 +99,7 @@ class ChangePassword extends Component {
                         <small onClick={this.showModal}>click for password rules</small>
                         <button type="submit" className="btn d-block  btn-primary">Submit</button>
                         <small className={showOldPasswordTextError}>The old password didn't match, try again</small>
-                        <small className={showNewPasswordTextError}>The old password didn't match, try again</small>
+                        <small className={showNewPasswordTextError}>The new password didn't match, try again</small>
                         <small className={showNewPasswordSameAsOldTextError}>The new password matched your latest 3
                             passwords</small>
                         <small className={successfulUpdate}>Your new password saved in the DB</small>
