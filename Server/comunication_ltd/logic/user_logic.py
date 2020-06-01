@@ -16,7 +16,7 @@ def create_user(user):
     if not user_db:
         if not verify_password(user.password):
             return response_invalid_password()
-        if not check_sqli(user.email) or not check_sqli(user.id) or not check_sqli(user.salt):
+        if not check_sqli(user.email):
             return response_server_error()  # might be sql injection
         user.salt, user.password = hash_password(user)
         db.session.add(user)
