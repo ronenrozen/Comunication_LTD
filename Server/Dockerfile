@@ -10,4 +10,6 @@ EXPOSE 5000
 
 ENTRYPOINT [ "python" ]
 
-CMD [ "run.py" ]
+ARG MODE
+
+CMD [ "run.py ${MODE}" ]

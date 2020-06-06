@@ -5,6 +5,8 @@ services:
   server:
 
     build: Server/
+        args:
+            MODE: --client
        
     ports:
       - 5000:5000

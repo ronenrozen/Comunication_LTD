@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+
+  server:
+
+    build: Server/
+        args:
+            MODE: --server
+       
+    ports:
+      - 5000:5000
+
+  client:
+    build: Client/
+    stdin_open: true
+
+    depends_on:
+      - server
+      
+    ports:
+      - 3000:3000
+
